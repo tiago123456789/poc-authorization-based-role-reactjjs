@@ -1,24 +1,48 @@
-import logo from './logo.svg';
+import React, { createContext, useContext, useState } from 'react';
 import './App.css';
 
-function App() {
+const ModeContext = createContext();
+
+const ModeProvider = ({ children }) => {
+  const [mode, setMode] = useState("dark")
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ModeContext.Provider value={{ mode, setMode }}>
+      {children}
+    </ModeContext.Provider>
+  )
+}
+
+const useMode = () => {
+  return useContext(ModeContext);
+}
+
+function WhatIsMode() {
+  const { mode, setMode } = useMode();
+  const styleByMode = {
+    "dark": {
+      "color": "white", "background": "black"
+    },
+    "light": {
+      "color": "black", "background": "red"
+    }
+  };
+
+  return (
+    <>
+      <button onClick={() => setMode("dark")}>Dark</button>
+      <button onClick={() => setMode("light")}>Light</button>
+      <p style={styleByMode[mode]}>{mode}</p>
+    </>
+  )
+}
+
+function App() {
+
+  return (
+    <ModeProvider>
+      <WhatIsMode></WhatIsMode>
+    </ModeProvider>
   );
 }
 
