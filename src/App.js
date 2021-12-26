@@ -1,48 +1,28 @@
-import React, { createContext, useContext, useState } from 'react';
-import './App.css';
-
-const ModeContext = createContext();
-
-const ModeProvider = ({ children }) => {
-  const [mode, setMode] = useState("dark")
-
-  return (
-    <ModeContext.Provider value={{ mode, setMode }}>
-      {children}
-    </ModeContext.Provider>
-  )
-}
-
-const useMode = () => {
-  return useContext(ModeContext);
-}
-
-function WhatIsMode() {
-  const { mode, setMode } = useMode();
-  const styleByMode = {
-    "dark": {
-      "color": "white", "background": "black"
-    },
-    "light": {
-      "color": "black", "background": "red"
-    }
-  };
-
-  return (
-    <>
-      <button onClick={() => setMode("dark")}>Dark</button>
-      <button onClick={() => setMode("light")}>Light</button>
-      <p style={styleByMode[mode]}>{mode}</p>
-    </>
-  )
-}
+import React from 'react';
+import { AuthProvider } from './provider/AuthContext';
+import { BrowserRouter, Route, Redirect } from "react-router-dom";
+import PageAdmin from "./pages/PageAdmin"
+import PageEmployee from "./pages/PageEmployee"
+import Login from './pages/Login';
+import Todo from './pages/Todo';
+import PrivateRoute from './components/Auth/PrivateRoute';
 
 function App() {
-
   return (
-    <ModeProvider>
-      <WhatIsMode></WhatIsMode>
-    </ModeProvider>
+    <AuthProvider>
+      <BrowserRouter>
+        <PrivateRoute permission="ADMIN" 
+        exact={true} path="/admin" component={PageAdmin} />
+        
+        <PrivateRoute permission="EMPLOYEE" 
+        exact={true} path="/employee" component={PageEmployee} />
+
+        <PrivateRoute exact={true} path="/todos" component={Todo} />
+
+        <Route exact={true} path="/" component={Login} />
+        <Redirect to="/"/>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
